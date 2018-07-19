@@ -1,2 +1,10 @@
 - A .jpg file for the image
 - A .xml file for the bounding box
+
+Description for the data needed:
+
+* Having at least 200 pictures overall is recommanded. 
+* They should be less than 200KB each, and their resolution shouldn’t be more than 720x1280. 
+* 50% for each class(bacteria and background).
+* 80% for the training and 20% for the testing part.
+* For the bounding box: each is defined by (x_min,x_max,y_min,y_max)
