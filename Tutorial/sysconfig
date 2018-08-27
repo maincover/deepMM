@@ -1,3 +1,13 @@
+1, Install linux,
+
+2, source : https://codeyarns.com/2017/05/30/how-to-build-caffe2-from-source/
+
+sudo apt install build-essential cmake git libgoogle-glog-dev libprotobuf-dev protobuf-compiler python-dev python-pip libgflags2 libgtest-dev libiomp-dev libleveldb-dev liblmdb-dev libopencv-dev libopenmpi-dev libsnappy-dev openmpi-bin openmpi-doc python-pydot
+
+sudo pip install numpy protobuf flask graphviz hypothesis jupyter matplotlib pydot python-nvd3 pyyaml requests scikit-image scipy setuptools tornado
+
+3, Install cuda download cuda 8.0 and cudnn 7.2 for cuda 8.0
+
 sudo apt-get --purge remove cuda
 sudo apt autoremove
 to remove cuda 9.0
@@ -11,5 +21,39 @@ sudo dpkg -i cuda-repo-ubuntu1604-8-0-local-ga2_8.0.61-1_amd64.deb
 sudo apt-get update
 sudo apt-get install cuda
 
+export PATH=/usr/local/cuda-8.0/bin${PATH:+:${PATH}}
 
+3,     
+cudnn: download cudnn from nvidia 7.2 for cuda 8.0
+
+sudo tar -xzf cudnn-8.0-linux-x64-v5.1.tgz -C /usr/local
+rm cudnn-8.0-linux-x64-v5.1.tgz && sudo ldconfig
+
+4, install dependencies
+
+sudo apt-get update
+sudo apt-get install -y --no-install-recommends \
+      build-essential \
+      cmake \
+      git \
+      libgoogle-glog-dev \
+      libgtest-dev \
+      libiomp-dev \
+      libleveldb-dev \
+      liblmdb-dev \
+      libopencv-dev \
+      libopenmpi-dev \
+      libsnappy-dev \
+      libprotobuf-dev \
+      openmpi-bin \
+      openmpi-doc \
+      protobuf-compiler \
+      python-dev \
+      python-pip                          
+pip install --user \
+      future \
+      numpy \
+      protobuf
+     
+      
 
