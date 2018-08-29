@@ -8,6 +8,8 @@ sudo pip install numpy protobuf flask graphviz hypothesis jupyter matplotlib pyd
 
 3, Install cuda download cuda 8.0 and cudnn 7.2 for cuda 8.0
 
+export PATH=/usr/local/cuda-9.0/bin${PATH:+:${PATH}} setup the correct version of cuda
+ 
 sudo apt-get --purge remove cuda
 sudo apt autoremove
 to remove cuda 9.0
@@ -75,10 +77,193 @@ sudo apt install build-essential cmake git libgoogle-glog-dev libprotobuf-dev pr
 TEST:
 python2 -c 'from caffe2.python import core' 2>/dev/null && echo "Success" || echo "Failure"
 
-Some sources:
-https://www.tinymind.cn/articles/1262
 
-For 16.04
+在Ubuntu下安装caffe2
+TinyMind 2018-08-20 17:37
+关注文章
+caffe2
 
-sudo apt-get install -y --no-install-recommends libgflags-dev
+caffe2的安装并不简单，主要原因是中文博客五花八门，而官网的安装教程又太不详细，所以这里根据自己亲自的实践过程写一篇博客，方便日后查看。
+
+首先还是安装conda和cudnn，如果没有安装这两个工具的朋友可以参考我的这篇博客：Ubuntu下安装Cuda和cudnn
+
+下面有两种安装方法，第一种方法非常简单，如果不需要安装Detectron的话，可以先尝试第一种方法。
+1.使用conda安装（anaconda，miniconda）
+
+      1.1 安装anaconda或者miniconda
+
+安装步骤非常简单，可参考相关博客完成。需要注意的是要将anaconda的bin路径放在.bashrc文件中，例如我的路径为
+
+export PATH="/home/wangyuanwei/miniconda3/bin:$PATH"
+
+运行下面的指令使环境生效
+
+source ~/.bashrc 
+
+      1.2 创建虚拟环境并激活
+
+由于后续还需要安装Detectron，而Detectron需要的Python版本为Python2，所以在创建虚拟环境的时候就指定使用Python2。
+
+打开终端，用下面的命令创建一个名称为caffe2的虚拟环境：
+
+conda create -n caffe2 python=2.7
+
+然后激活这个虚拟环境
+
+source activate caffe2
+
+       1.3 安装caffe2
+
+查看gcc的版本号
+
+gcc --version
+
+如果gcc的版本号小于5的话，可用下面的两个命令来安装CPU或者GPU版本的caffe2
+
+CPU版本
+
+conda install -c caffe2 caffe2-gcc4.8
+
+GPU版本
+
+conda install -c caffe2 caffe2-cuda9.0-cudnn7-gcc4.8
+
+ 如果gcc的版本号大于5，则按照自己的配置从下面的三条指令中选择一条命令，假如cuda和cudnn都不符合下面的要求，则可以更改cudnn或者cuda的版本，具体方法可以参考我的另外一篇博客，或者使用下面介绍的从源码安装的方法来安装。
+
+CPU版本
+
+conda install -c caffe2 caffe2
+
+GPU版本1：cuda9.0+cudnn7.0+caffe2
+
+conda install -c caffe2 caffe2-cuda9.0-cudnn7
+
+GPU版本2：cuda8.0+cudnn7.0+caffe2 
+
+conda install -c caffe2 caffe2-cuda8.0-cudnn7
+
+       1.4 验证caffe2 
+
+上述安装任务完成后，打开一个新的终端窗口，然后激活caffe2：
+
+source activate caffe2
+
+然后输入下面的语句验证是否安装成功;
+
+python -c 'from caffe2.python import core' 2>/dev/null && echo "Success" || echo "Failure"
+
+如果没有提示异常就是安装成功。
+
+但是如果打算安装 Detectron的话，这种方法不可行，可能是conda安装的caffe2版本不够新，所以还不支持Detectron。
+2.使用conda build安装
+
+这是从官网翻译过来的教程（点击进入官网教程），这种方法需要事先安装好anaconda或者miniconda，理论上可以安装caffe2，并且支持Detectron，不过本人没有使用这种方法安装过。（不过方法非常简单，可以尝试一下）
+
+（1）下载源码。
+
+新建一个存放源码的文件夹（最好不要有中文），然后进入该文件夹，打开终端下载源码：
+
+git clone --recursive https://github.com/pytorch/pytorch.git && cd pytorch
+
+（2）安装caffe2 
+
+CPU版本:
+
+./scripts/build_anaconda.sh --install-locally
+
+GPU版本
+
+./scripts/build_anaconda.sh --install-locally --cuda 9.0 --cudnn 7
+
+测试caffe2
+
+python -c 'from caffe2.python import core' 2>/dev/null && echo "Success" || echo "Failure"
+
+3.使用conda并且从源码安装（本人亲测，可以安装caffe2，并且可以安装Detectron）
+
+（1）下载caffe2源码
+
+cd进入合适的路径，将源码存放在当前路径中，例如我的想将caffe2 的源码安装在  /home/wangyuanwei/Deeplearning/目录下，则运行下面的指令：
+
+cd /home/wangyuanwei/Deeplearning/
+git clone --recursive https://github.com/pytorch/pytorch.git && cd pytorch
+
+
+（2）创建并激活虚拟环境
+
+跟第一种安装方法类似，首先应该安装anaconda，创建并激活虚拟环境：
+
+conda create -n caffe2 python=2.7  && source activate caffe2
+
+（3）安装所需要的安装包
+
+conda install -y \
+    future \
+    gflags \
+    glog \
+    leveldb \
+    mkl \
+    mkl-include \
+    numpy \
+    opencv \
+    protobuf \
+    six
+
+
+ 注意：本人在实际测试的时候发现protobuf老是出错，原因可能是用conda 自动安装的protobuf版本太老，也有可能是conda自动安装的protobuf安装包出现错误。所以下面的步骤非常关键
+
+可以使用下面的指令卸载旧版本的protobuf，并且安装一个新版本的protobuf（亲测有效）：
+
+conda install -y --channel https://conda.anaconda.org/conda-forge protobuf
+
+
+接着查看一下当前的protobuf版本
+
+protoc --version
+
+显示版本为 libprotoc 3.6.0，说明protobuf版本更新成功。
+
+（4）创建build文件夹
+
+注意当前的目录仍然为/home/wangyuanwei/Deeplearning/caffe2/pytorch，用下面的指令在该目录下创建build文件夹
+
+git submodule update --init
+rm -rf build && mkdir build && cd build
+
+
+（5）对caffe2的build进行配置
+
+根据conda的安装位置进行配置，例如我的配置为：
+
+cmake -DCMAKE_PREFIX_PATH=/home/wangyuanwei/miniconda3/envs/caffe2 -DCMAKE_INSTALL_PREFIX=/home/wangyuanwei/miniconda3/envs/caffe2 ..
+
+
+此时cmake会输出一堆配置信息。
+
+（6）编译并安装caffe2
+
+make install
+
+
+（7）测试
+
+python2 -c 'from caffe2.python import core' 2>/dev/null && echo "Success" || echo 
+
+python2 -c 'from caffe2.python import workspace; print(workspace.NumCudaDevices())'
+
+
+如果出现类似“ImportError: No module named caffe2.python”的错误的时候，则需要给系统添加一下Python的环境：
+
+打开.bashrc文件，在最后一行添加如下路径
+
+export PYTHONPATH=/home/wangyuanwei/Deeplearning/caffe2/pytorch/build:$PYTHONPATH
+
+然后运行下面的命令让环境生效：
+
+source ~/.bashrc 
+
+此时重新打开一个新的终端窗口，并且激活caffe2环境，再次运行上面的测试程序就不会再出错了。
+
+至此安装成功！
+
 
