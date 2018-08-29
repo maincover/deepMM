@@ -55,5 +55,22 @@ pip install --user \
       numpy \
       protobuf
      
-      
+conda install conda-build
+ 
+For GPU support you will need CUDA, CuDNN, and NCCL. These must be installed from Nvidia’s website.
+CUDA 9.0 cudnn 7.2 NCCL online install
 
+https://developer.nvidia.com/cuda-downloads
+https://developer.nvidia.com/cudnn
+https://developer.nvidia.com/nccl
+
+
+git clone https://github.com/pytorch/pytorch.git && cd pytorch
+git submodule update --init --recursive
+
+./scripts/build_anaconda.sh --install-locally --cuda 9.0 --cudnn 7
+
+sudo apt install build-essential cmake git libgoogle-glog-dev libprotobuf-dev protobuf-compiler python-dev python-pip libgflags2 libgtest-dev libiomp-dev libleveldb-dev liblmdb-dev libopencv-dev libopenmpi-dev libsnappy-dev openmpi-bin openmpi-doc python-pydot
+
+TEST:
+python2 -c 'from caffe2.python import core' 2>/dev/null && echo "Success" || echo "Failure"
