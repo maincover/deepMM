@@ -70,12 +70,16 @@ https://developer.nvidia.com/nccl
 git clone https://github.com/pytorch/pytorch.git && cd pytorch
 git submodule update --init --recursive
 
+
+-caffe2_cmake_args+=("-DUSE_LMDB=OFF")
++caffe2_cmake_args+=("-DUSE_LMDB=ON")
 ./scripts/build_anaconda.sh --install-locally --cuda 9.0 --cudnn 7
 
 sudo apt install build-essential cmake git libgoogle-glog-dev libprotobuf-dev protobuf-compiler python-dev python-pip libgflags2 libgtest-dev libiomp-dev libleveldb-dev liblmdb-dev libopencv-dev libopenmpi-dev libsnappy-dev openmpi-bin openmpi-doc python-pydot
 
 TEST:
 python2 -c 'from caffe2.python import core' 2>/dev/null && echo "Success" || echo "Failure"
+
 
 
 在Ubuntu下安装caffe2
