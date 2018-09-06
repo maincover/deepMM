@@ -80,7 +80,13 @@ sudo apt install build-essential cmake git libgoogle-glog-dev libprotobuf-dev pr
 TEST:
 python2 -c 'from caffe2.python import core' 2>/dev/null && echo "Success" || echo "Failure"
 
+Rebuild with levelDB ON
 
+sudo apt-get install libsnappy-dev
+conda install -c anaconda leveldb
+sudo cp -R ~/miniconda2/lib/libleveldb.* /usr/local/lib
+sudo cp -R ~/miniconda2/include/leveldb/* /usr/local/include
+sudo ldconfig
 
 在Ubuntu下安装caffe2
 TinyMind 2018-08-20 17:37
